@@ -67,7 +67,7 @@ void setup() {
   // call broadcast otherwise Service Data is not included in advertisement value
   characteristic.broadcast();
 
-  // characteristic.writeValue *after* calling characteristic.broadcast
+  // create the variables to be send
   byte * x = (byte *) &ax;
   byte * y = (byte *) &ay;
   byte * z = (byte *) &az;
@@ -99,7 +99,7 @@ void loop() {
   // read accelerometer measurements from device, scaled to the configured range
   CurieIMU.readAccelerometerScaled(ax, ay, az);
 
-  // display tab-separated accelerometer x/y/z values
+  // Send reading in case of larger movement detected
   if(abs(ax) > 0.5 || abs(ay) > 0.5 ){
     sendReading();
   }
@@ -107,6 +107,7 @@ void loop() {
 }
 
 void sendReading(){
+  //Print in serial monitor the readed values
   Serial.print("a:\t");
   Serial.print(ax);
   Serial.print("\t");
@@ -118,7 +119,7 @@ void sendReading(){
   serialFloatPrint(ax);
   serialFloatPrint(ay);
   serialFloatPrint(az);
-  
+  //Set values
   byte * x = (byte *) &ax;
   byte * y = (byte *) &ay;
   byte * z = (byte *) &az;
@@ -131,7 +132,8 @@ void sendReading(){
     z[0],z[1],z[2],z[3],
     
   };
-  
+    
+  //Advertise packet
   characteristic.writeValue( advdatacopy, sizeof(advdatacopy) );
   delay(1000);
 }
